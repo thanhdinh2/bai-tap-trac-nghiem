@@ -1,0 +1,1 @@
+RewriteEngine on#RewriteRule ^bai/([0-9][0-9])/$ /index.php?id=$1#RewriteBase   /bt#Redirect testfile.php http://www.google.comRewriteRule ^old\.html$ new.html [R]
