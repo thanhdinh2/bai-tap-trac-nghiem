@@ -18,7 +18,7 @@ while ($data = mysql_fetch_array($result)) {
 	echo "<td align='left'>".$data['hoten']."</td>";
 	echo "<td>".$data['lop']."</td>";
 	echo "<td>".$data['ngaygio']."</td>";
-	echo "<td>".$data['file']."</td>";
+	echo "<td><a href='loadfile.php?f=".$data['file']."'>".$data['file']."</a></td>";
 	echo "<td>".$data['baitap']."</td>";
 	echo "<td align='left'>".$data['ip']."</td>";
 	echo "</tr>";

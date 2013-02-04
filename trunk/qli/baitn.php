@@ -25,7 +25,7 @@ if (isset($_GET['act'])) {
 			echo "Tiêu đề <input name='tieude' type='text' size='100'><br/>";
 			echo "Kích hoạt sử dụng <input name='kichhoat' type='checkbox'><br/>";
 			echo "Số câu hỏi: <input name='socau' type='text'><br/>";
-			echo "Thời gian làm bài: <input name='thoigian' type='text'><br/>";
+			echo "Thời gian làm bài (giây): <input name='thoigian' type='text'><br/>";
 			echo "Tiêu đề (ghi chú): <br/><textarea name='ghichu'></textarea><br/>";
 			echo "<input type ='submit' name='addnew' value='Thêm vào'>";
 			echo "</form>";
@@ -74,7 +74,7 @@ else {
 echo "</body></html>";
 
 function themdebai($tieude,$muc,$socau,$thoigian,$ghichu) {
-	$sql= "insert into baikiemtra (tenbai,kichhoat,socau,thoigian,tieude)value ('$tieude', $muc,$socau,$thoigian,$ghichu)";
+	$sql= "insert into baikiemtra (tenbai,kichhoat,socau,thoigian,tieude)value ('$tieude', $muc,$socau,$thoigian,'$ghichu')";
 	if (defined("DEBUG")) echo $sql."<br/>";
 	$result = mysql_query($sql) or die (mysql_error());
 	if ($result) echo "THÀNH CÔNG";
