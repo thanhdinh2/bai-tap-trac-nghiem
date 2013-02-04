@@ -8,7 +8,7 @@ mysql_query("SET NAMES utf8"); //connect in decode utf8
 echo "<html><head><title>Quản lí câu hỏi</title></head><body>";
 if (!isset($_GET['bai'])) {
 	echo "Chuyển sang phần quản lí bài trắc nghiệm";
-	redirect("baitn.php",3);
+	redirect("baitn.php",1);
 	exit(0);
 }
 $bai = intval($_GET['bai']);
@@ -19,12 +19,12 @@ if (isset($_GET['act'])) {
 		if (isset($_POST['addnew'])) { //add
 			$tieude = mysql_real_escape_string($_POST['cauhoi']);
 			themcauhoi($bai,$tieude);
-			redirect("?bai=$bai",3);
+			redirect("?bai=$bai",1);
 			//echo $tieude.$muc;
 		} 
 		else { //input
 			echo "<form action='?bai=$bai&act=add' method='post'>";
-			echo "Câu hỏi <br/><textarea name='cauhoi' ></textarea><br/>";
+			echo "Câu hỏi <br/><textarea cols='80' name='cauhoi' ></textarea><br/>";
 			echo "<input type ='submit' name='addnew' value='Thêm vào'>";
 			echo "</form>";
 		}
@@ -39,14 +39,14 @@ if (isset($_GET['act'])) {
 			$tieude = mysql_real_escape_string($_POST['tieude']);
 			$muc = isset($_POST['muc'])?1:0;
 			capnhatcauhoi($cau,$tieude);
-			redirect("?bai=$bai",3);
+			redirect("?bai=$bai",1);
 		} else { //prepare to edit
 			suacauhoi($bai,$cau);
 		}
 	} 
 	else if ($act=="delete") {
 		if (isset($_GET['id'])) xoacauhoi($_GET['id']);
-		redirect("?bai=$bai",3);
+		redirect("?bai=$bai",1);
 	} 
 	else { //vieew
 		if (isset($_GET['id'])) { //by id
@@ -86,7 +86,7 @@ function suacauhoi($bai,$cau) { //xem de bai
 	if (mysql_num_rows($result)) {
 		$data  = mysql_fetch_array($result);
 		echo "<form action='?bai=$bai&act=edit&id=$cau' method='post'>";
-		echo "Câu hỏi<br/> <textarea name='tieude' >". $data['hoi']."</textarea><br/>";
+		echo "Câu hỏi<br/> <textarea cols='80' name='tieude' >". $data['hoi']."</textarea><br/>";
 		echo "<input type ='submit' name='save' value='Lưu lại'>";
 		echo "</form>";
 	} else {

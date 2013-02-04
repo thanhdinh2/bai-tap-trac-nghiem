@@ -8,7 +8,7 @@ mysql_query("SET NAMES utf8"); //connect in decode utf8
 echo "<html><head><title>Quản lí câu trả lời</title></head><body>";
 if (!isset($_GET['cau'])) {
 	echo "Chuyển sang phần quản lí bài trắc nghiệm";
-	redirect("baitn.php",2);
+	redirect("baitn.php",1);
 	exit(0);
 }
 $cau = intval($_GET['cau']);
@@ -48,7 +48,7 @@ if (isset($_GET['act'])) {
 	} 
 	else if ($act=="delete") {
 		if (isset($_GET['id'])) xoacautraloi($_GET['id']);
-		redirect("?cau=$cau",2);
+		redirect("?cau=$cau",1);
 	} 
 	else { //vieew
 		if (isset($_GET['id'])) { //by id

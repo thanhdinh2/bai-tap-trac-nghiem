@@ -1,5 +1,5 @@
 ﻿<?php
-//redirect("tracnghiem.php");
+redirect("tn.php");
 require_once "config.php";
 $link = mysql_connect($db_host, $db_user, $db_pass);
 mysql_select_db($db_name);

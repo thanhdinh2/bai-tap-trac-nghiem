@@ -13,7 +13,7 @@ unset($_SESSION['ketqua']);
 unset($_SESSION['gio']);
 echo "Đã ra khỏi khu vực thi";
 echo "</body></html>";
-redirect("tracnghiem.php",1);
+redirect("tn.php",1);
 
 function redirect($location, $delaytime = 0) {
     if ($delaytime>0) {    
