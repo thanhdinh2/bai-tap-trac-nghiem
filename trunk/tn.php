@@ -79,7 +79,7 @@ echo "<html><head><title>Trắc nghiệm</title>";
 		$("#nopbai").click(function(){
 			//nopbai();
 			if (confirm("Bạn chắc chắn muốn nộp bài?")) {
-				window.clearTimeout(myTimer);
+				t=0;
 				nopbai();
 			}
 			//t=0;
@@ -104,6 +104,7 @@ echo "<html><head><title>Trắc nghiệm</title>";
 		$("#baikiemtra").hide();
 		$.post("caigio.php");
 		//delete t;
+		
 		var ph="";
 		var scd = 0;
 		for (var i=0; i<sc; i++) {
@@ -154,7 +155,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 		if (mysql_num_rows($result)) { //co ki thi
 			$dapan="";
 			$data = mysql_fetch_array($result);
-			echo $data['tenbai']."<hr/>";
+			echo $data['tenbai']." // Số câu: ".$data['socau']. " // Thời gian: ".intval($data['thoigian']/60).":".($data['thoigian'] % 60)."<hr/>";
 			$tieude= $data['tieude']."<br/>";
 			$socau = $data['socau'];
 			$_SESSION['socau']=$socau;
@@ -223,7 +224,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 		echo "</table>";
 		if ($fid==$cid) redirect("?id=".$fid);
 	}
-	echo "<hr/><a href='thoat.php'>Thoát</a><br/>";
+	echo "<hr/><a href='thoat.php'>Thoát</a><br/><br/>";
 	echo $_SESSION['ten']."<br/>";
 } 
 else { //chua dang nhap
@@ -247,7 +248,7 @@ else { //chua dang nhap
 		//echo "<br/>LÀM BÀI KIỂM TRA TRỰC TUYẾN<HR/>";
 		echo "<center>";
 		echo "<form action='?'".(isset($_GET['id'])?"id=".$_GET['id']:"")." method='post'>";
-		echo "Họ và tên: <input type='text' name='ten' size='40'><br/>";
+		echo "Họ và tên: <input type='text' name='ten' size='40'><br/><br/>";
 		echo "Lớp: <input type='text' name='lop' size='30'><br/><br/>";
 		echo "<input type='submit' name='dangnhap' value='Đăng nhập'><br/>";
 		echo "</form>";
