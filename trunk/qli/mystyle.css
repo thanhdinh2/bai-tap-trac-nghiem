@@ -27,3 +27,7 @@ tr.row0 {
 tr.row1 {
 	background-color: #CFF;
 }
+
+tr:hover {
+	color: #f00; background-color: #FFff00;
+}

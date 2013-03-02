@@ -1,5 +1,6 @@
 ﻿<?php
 redirect("tn.php");
+//redirect("bt.php?id=12");
 require_once "config.php";
 $link = mysql_connect($db_host, $db_user, $db_pass);
 mysql_select_db($db_name);
