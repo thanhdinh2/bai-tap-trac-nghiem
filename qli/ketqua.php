@@ -8,6 +8,7 @@ mysql_query("SET NAMES utf8"); //connect in decode utf8
 echo "<html><head><title>Kết quả làm bài</title>";
 ?>
 <script src="jquery.min.js" type="text/javascript"></script>
+<script src="jquery-ui.min.js" type="text/javascript"></script>
 <script language='javascript'>
 	var x=1,y=2;
 	$(document).ready(function(){
@@ -15,9 +16,12 @@ echo "<html><head><title>Kết quả làm bài</title>";
 			$.get("getnewtn.php?id="+$("#ketquatracnghiem tr:eq(1) td:first").text(),function(data){
 				//if (data.indexOf("<tr>")>=0)
 				$("#ketquatracnghiem tr:first").after(data);
+				if (data) {
+					$("#ketquatracnghiem tr:eq(1)").effect("highlight", {color:"#ff0000"}, 5000);
+				}
 			});
 			//$("#test").append("1");
-			setTimeout(update1,3000);
+			setTimeout(update1,1000);
 		}
 		setTimeout(update1,3000);
 		function update2() { //tracnghiem

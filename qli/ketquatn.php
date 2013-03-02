@@ -19,6 +19,7 @@ echo "<html><head><title>Kết quả làm bài</title>";
 				//alert(data);
 			});
 		});
+		
 	});
 	
 </script>
@@ -30,13 +31,13 @@ echo "</head><body>";
 $id=0;
 $page = 1;
 if (isset($_GET['p'])) $page=$_GET['p'];
-$sl1page = 30;
+$sl1page = 20;
 if (isset($_GET['ep'])) $sl1page=$_GET['ep'];
 
 echo "<div id='tracnghiem'>";
 echo "KẾT QUẢ LÀM BÀI TRẮC NGHIỆM<BR/>";
 echo "<table id='ketquatracnghiem'>";
-echo "<tr align='center'><td>Xoá</td><td>ID</td><td>Họ và tên</td><td>Lớp</td><td>Ngày giờ nộp</td><td>Kết quả</td><td>Bài KT</td><td>IP</td></tr>";
+echo "<tr align='center'><td>Xoá</td><td>ID</td><td>Họ và tên</td><td>Lớp</td><td>Kết quả</td><td>Bài KT</td><td>Ngày giờ nộp</td><td>IP</td></tr>";
 $sql = "select * from nopbaikiemtra order by id desc limit ".(($page-1)*$sl1page).",".$sl1page;
 $result = mysql_query($sql) or die (mysql_error());
 $r=1;
@@ -47,9 +48,9 @@ while ($data = mysql_fetch_array($result)) {
 	echo "<td>".$data['id']."</td>";
 	echo "<td align='left'>".$data['hoten']."</td>";
 	echo "<td>".strtoupper($data['lop'])."</td>";
-	echo "<td>".$data['ngaygio']."</td>";
 	echo "<td>".$data['ketqua']."</td>";
 	echo "<td>".$data['baikt']."</td>";
+	echo "<td>".$data['ngaygio']."</td>";
 	echo "<td align='left'>".$data['ip']."</td>";
 	echo "</tr>";
 }
@@ -57,10 +58,13 @@ echo "</table>";
 echo "<script language='javascript'>var tnid=$id;</script>";
 echo "</div>";
 
+
 echo "<div id='page'>";
-if ($page>1) echo "<a href='?p=".($page-1)."' class='page'>Trang trước</a>";
+if ($page>2) echo "<a href='?p=".($page-2)."' class='page'>Trang ".($page-2)."</a>";
+if ($page>1) echo "<a href='?p=".($page-1)."' class='page'>Trang ".($page-1)."</a>";
 echo "<span class='page'>Trang ".$page."</span>";
-if ($id>0) echo "<a href='?p=".($page+1)."' class='page'>Trang sau</a>";
+if ($id>0) echo "<a href='?p=".($page+1)."' class='page'>Trang ".($page+1)."</a>";
+if ($id>1) echo "<a href='?p=".($page+2)."' class='page'>Trang ".($page+2)."</a>";
 echo "</div>";
 
 echo "</body></html>";
