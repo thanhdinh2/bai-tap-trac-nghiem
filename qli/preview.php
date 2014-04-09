@@ -6,11 +6,11 @@ mysql_select_db($db_name);
 mysql_query("SET NAMES utf8"); //connect in decode utf8
 //define("DEBUG",TRUE);
 echo "<html><head><title>Trắc nghiệm</title>";
-
+echo "<style>.phuongan1{color:blue;}</style>";
 echo "</head><body>";
 echo "LÀM BÀI KIỂM TRA TRỰC TUYẾN<hr/>";
 session_start();
-
+$demuc=isset($_GET['no']);
 	if (isset($_GET['id'])) { //da chon ki thi
 		$bai = intval($_GET['id']);
 		$sql = "select * from baikiemtra where id=$bai";
@@ -20,7 +20,7 @@ session_start();
 			$data = mysql_fetch_array($result);
 			echo $data['tenbai']."<hr/>";
 			$socau = $data['socau'];
-			$sql = "select * from cauhoi where bai=$bai order by rand() limit $socau";
+			$sql = "select * from cauhoi where bai=$bai order by rand();";
 			$result = mysql_query($sql);
 			$ch=1;
 			echo "<div id='baikiemtra' >";
@@ -34,8 +34,8 @@ session_start();
 				$result2 = mysql_query($sql) or die(mysql_error());
 				$pa=1;
 				while ($data2 = mysql_fetch_array($result2)) {
-					echo "<div class='phuongan'><span>";
-					echo chr(64+$pa++)."</span>. ";
+					echo "<div class='phuongan".$data2['diem']."'>";
+					if (!$demuc) echo "<span>".chr(64+$pa++)."</span>. ";
 					echo $data2['phuongan'];
 					echo "</div>";
 					if ($data2['diem']>0) if (rand()>10000) $dapan=chr($ch+63).$pa.$dapan; else $dapan.=chr($ch+63).$pa;
