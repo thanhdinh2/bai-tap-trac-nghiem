@@ -24,9 +24,11 @@ echo "<html><head><title>Trắc nghiệm</title>";
 	var myTimer = null;
 	//var t = 300;//giay
 	$(document).ready(function(){
-		$(".cau:eq(0)").show();
-		for (var i=1;i<=sc;i++) {
-			$("#cauhoitraloi").append("<span class='cautraloi' id='cautraloi"+i+"'>"+i+":"+"**</span> ");
+		if (typeof sc !== 'undefined') {
+			$(".cau:eq(0)").show();
+			for (var i=1;i<=sc;i++) {
+				$("#cauhoitraloi").append("<span class='cautraloi' id='cautraloi"+i+"'>"+i+":"+"**</span> ");
+			}
 		}
 		$(".phuongan").css("cursor","pointer");
 		$(".phuongan").mouseenter(function(){
@@ -75,6 +77,7 @@ echo "<html><head><title>Trắc nghiệm</title>";
 			$("#baikiemtra").show();
 			$(this).parent().hide();
 			tinhgio();
+			//$.post('batdau.php',{});
 		});
 		$("#nopbai").click(function(){
 			//nopbai();
@@ -133,6 +136,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 		echo "<tr class='chamcham'><td>Lớp:</td><td>".$_SESSION['lop']."</td></tr>";
 		echo "<tr class='chamcham'><td>Tổng số câu làm đúng:</td><td><b>".$_SESSION['ketqua']."</b> (".round(($_SESSION['ketqua']/$_SESSION['socau'])*10,1)." điểm)</td></tr>";
 		echo "</table><br/></center>";
+		redirect("thoat.php",15);
 	}
 	else if (isset($_GET['kq'])) {
 		$_SESSION['ketqua']=$_GET['kq'];
@@ -155,7 +159,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 		if (mysql_num_rows($result)) { //co ki thi
 			$dapan="";
 			$data = mysql_fetch_array($result);
-			echo $data['tenbai']." // Số câu: ".$data['socau']. " // Thời gian: ".intval($data['thoigian']/60).":".($data['thoigian'] % 60)."<hr/>";
+			echo $data['tenbai']."<br/>Số câu: ".$data['socau']. "<br/>Thời gian: ".intval($data['thoigian']/60).":".($data['thoigian'] % 60)."<hr/>";
 			$tieude= $data['tieude']."<br/>";
 			$socau = $data['socau'];
 			$_SESSION['socau']=$socau;

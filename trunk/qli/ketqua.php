@@ -10,20 +10,21 @@ echo "<html><head><title>Kết quả làm bài</title>";
 <script src="jquery.min.js" type="text/javascript"></script>
 <script src="jquery-ui.min.js" type="text/javascript"></script>
 <script language='javascript'>
-	var x=1,y=2;
+	var x=1,y=2; doi=true;
 	$(document).ready(function(){
 		function update1() { //tracnghiem
 			$.get("getnewtn.php?id="+$("#ketquatracnghiem tr:eq(1) td:first").text(),function(data){
 				//if (data.indexOf("<tr>")>=0)
 				$("#ketquatracnghiem tr:first").after(data);
 				if (data) {
-					$("#ketquatracnghiem tr:eq(1)").effect("highlight", {color:"#ff0000"}, 5000);
+					$("#ambao").get(0).play();
+					//$("#ketquatracnghiem tr:eq(1)").effect("highlight", {color:"#ff0000"}, 5000);
 				}
 			});
 			//$("#test").append("1");
-			setTimeout(update1,1000);
+			setTimeout(update1,2000);
 		}
-		setTimeout(update1,3000);
+		setTimeout(update1,2000);
 		function update2() { //tracnghiem
 			$.get("getnewbt.php?id="+$("#ketquabaitap tr:eq(1) td:first").text(),function(data){
 				//if (data.indexOf("<tr>")>=0)
@@ -33,6 +34,9 @@ echo "<html><head><title>Kết quả làm bài</title>";
 			setTimeout(update2,3100);
 		}
 		setTimeout(update2,3000);
+		$(".row1").click(function(){
+			$("#ambao").get(0).play();
+		});
 	});
 	
 </script>
@@ -88,7 +92,7 @@ echo "<script language='javascript'>var btid=$id;</script>";
 echo "<a href='ketquabt.php'>Xem thêm</a>";
 echo "</div>";
 echo "<div id='test'>x</div>";
-
+echo "<audio id='ambao' src='../media/phonering.wav'>Không có</audio>";
 echo "</body></html>";
 
 function redirect($location, $delaytime = 0) {
