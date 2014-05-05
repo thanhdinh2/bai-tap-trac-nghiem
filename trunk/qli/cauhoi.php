@@ -18,13 +18,17 @@ if (isset($_GET['act'])) {
 		echo "THÊM CÂU HỎI <hr/>";
 		if (isset($_POST['addnew'])) { //add
 			$tieude = mysql_real_escape_string($_POST['cauhoi']);
-			themcauhoi($bai,$tieude);
+			$loaitru=$_POST['loaitru'];
+			$sudung=(isset($_POST['sudung'])?"1":"0");
+			themcauhoi($bai,$tieude,$loaitru,$sudung);
 			redirect("?bai=$bai",1);
 			//echo $tieude.$muc;
 		} 
 		else { //input
 			echo "<form action='?bai=$bai&act=add' method='post'>";
 			echo "Câu hỏi <br/><textarea cols='80' name='cauhoi' ></textarea><br/>";
+			echo "Loại trừ với các câu hỏi: <input type='text' name='loaitru' /><br/>";
+			echo "Sử dụng? <input type='checkbox' checked name='sudung' /><br/>";
 			echo "<input type ='submit' name='addnew' value='Thêm vào'>";
 			echo "</form>";
 		}
@@ -63,12 +67,23 @@ else {
 }
 echo "</body></html>";
 
-function themcauhoi($bai,$hoi) {
-	$sql= "insert into cauhoi (bai,hoi) value ($bai, '$hoi')";
+function themcauhoi($bai,$hoi,$loaitru="",$sudung="0") {
+	$sql= "insert into cauhoi (bai,hoi,dung,ngay) value ($bai, '$hoi','$sudung',NOW())";
 	if (defined("DEBUG")) echo $sql."<br/>";
 	$result = mysql_query($sql) or die (mysql_error());
-	if ($result) echo "THÀNH CÔNG";
-	else echo "THẤT BẠI";
+	if ($result) {
+		echo "THÀNH CÔNG";
+		$idmoi=mysql_insert_id();
+		if ($loaitru) {
+			$caus = explode(",", $loaitru);
+			foreach ($caus as $cau) {
+				mysql_query("insert into cauhoiloaitru (cau1,cau2) value ('$idmoi','$cau'); ") or die (mysql_error());
+			}
+		}
+	} else {
+		echo "THẤT BẠI";
+	}
+	
 }
 
 function capnhatcauhoi($cau,$tieude) {
@@ -125,10 +140,31 @@ function lietkecauhoi($bai){ //liet ke de bai theo trang
 	$result = mysql_query($sql) or die(mysql_error()); 
 	if (mysql_num_rows($result)) {
 		$i=1;
+		echo "<table><tr><td>TT</td><td>ID</td><td>Câu hỏi</td><td>Loại trừ</td></tr>";
 		while ($data = mysql_fetch_array($result)){
-			echo $i++.". <a href='?bai=$bai&act=view&id=".$data['id']."'>".$data['hoi']."</a><br/>\n";
-			//echo "OK";
+			echo "<tr><td>".$i++."</td>";
+			echo "<td>".$data['id']."</td>";
+			echo "<td>".($data['dung']?"":"<strike>")."<a href='?bai=$bai&act=view&id=".$data['id']."'>".$data['hoi']."</a>".($data['dung']?"":"</strike>")."</td>";
+			echo "<td>";
+			$sql="select * from cauhoiloaitru where cau1='".$data['id']."' or cau2='".$data['id']."'";
+			$ret=mysql_query($sql) or die(mysql_error());
+			if (mysql_num_rows($ret)) { //co loai tru
+				$ds="";
+				while ($cau=mysql_fetch_array($ret)) {
+					if ($cau['cau1']==$data['id']) {
+						$ds.=$cau['cau2'].", ";
+					} else {
+						$ds.=$cau['cau1'].", ";
+					}
+				}
+				echo $ds;
+			} else { //khong co loai tru
+				echo "Không có";
+			}
+			echo "</td>";
+			echo "<tr>";
 		}
+		echo "</table>";
 	} else {
 		echo "Không có câu hỏi nào";
 	}
