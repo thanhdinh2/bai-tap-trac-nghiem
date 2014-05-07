@@ -14,14 +14,14 @@ echo "<html><head><title>Trắc nghiệm</title>";
 		if (typeof t == "number") {
 			if (t>0) {
 				$.post("caigio.php",{gio:t});
-				alert("Bạn vẫn còn "+t+" giây");
+				alert("Bạn sẽ bị trừ 6 giây");
 			}
 		}
 	}
 	var hoi = new Array();
 	var cactraloi=new Array();
 	var c = 0;
-	var cau ;
+	var cau;
 	var pha= "";
 	var myTimer = null;
 	//var t = 300;//giay
@@ -29,8 +29,9 @@ echo "<html><head><title>Trắc nghiệm</title>";
 		if (typeof sc !== 'undefined') {
 			$(".cau:eq(0)").show();
 			for (var i=1;i<=sc;i++) {
-				$("#cauhoitraloi").append("<span class='cautraloi' id='cautraloi"+i+"'>"+i+":"+"*</span> ");
+				$("#cauhoitraloi").append("<span class='cautraloi' id='cautraloi"+i+"'>"+i+":"+"*</span>");
 				hoi[i-1]=0;
+				cactraloi[i-1]='0';
 			}
 		}
 		$(".phuongan").css("cursor","pointer");
@@ -53,6 +54,7 @@ echo "<html><head><title>Trắc nghiệm</title>";
 				$("#nopbai").show();
 			}
 			//alert(c+chon);
+			//if (typeof cau == 'undefined') cau = Array(sc).join("-");
 			cau = (c>0?cau.substr(0,c):"")+chon+cau.substr(c+1);
 			pha+=$(this).attr("id");
 			if ($("#tuchuyen").is(':checked'))
@@ -83,8 +85,9 @@ echo "<html><head><title>Trắc nghiệm</title>";
 		});
 		$("#batdau").click(function(){
 			//alert("OK");
-			cau = Array(sc).join("-");
+			if (typeof cau == 'undefined') cau = Array(sc).join("-");
 			$("#baikiemtra").show();
+			$("#khuvucthi").show();
 			$(this).parent().hide();
 			$.post("batdau.php");
 			tinhgio();
@@ -99,6 +102,7 @@ echo "<html><head><title>Trắc nghiệm</title>";
 			}
 			//t=0;
 		});
+		
 		if (typeof lamtudau != "undefined") {
 			if (!lamtudau) tinhgio();
 		}
@@ -108,6 +112,7 @@ echo "<html><head><title>Trắc nghiệm</title>";
 		if (t>0) {
 			$("#thoigian").text(~~(t/60) + ":" + (t%60<10?"0":"")+t%60);
 			myTimer = window.setTimeout(tinhgio,1000);
+			if (t%2==0) $.post("caigio.php",{gio:t});
 			if (t==59) $("#thoigian").addClass("maudo");
 		}
 		else {
@@ -143,7 +148,8 @@ session_start();
 if (isset($_SESSION['ten'])) { //da dang nhap
 	//echo $_SESSION['ten']."<br/>";
 	if (isset($_SESSION['ketqua'])) {
-		echo "KẾT QUẢ LÀM BÀI <HR/>";
+		echo "KẾT QUẢ LÀM BÀI <hr/>";
+		echo $_SESSION['tenbai']."<hr/>";
 		echo "<center>";
 		echo "<table border='0'>";
 		echo "<tr class='chamcham'><td>Họ và tên:</td><td>".$_SESSION['ten']."</td></tr>";
@@ -165,80 +171,156 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 		echo $fb;
 		$result = mysql_query($sql) or die (mysql_error());
 		mysql_query("update nopbaikiemtra set cactraloi='$fb' where id=".$_SESSION['maso']);
-		redirect("?",1);
+		redirect("tn.php",1);
 	}
 	else
 	if (isset($_GET['id'])) { //da chon ki thi
-		
-		$bai = intval($_GET['id']);
-		$sql = "select * from baikiemtra where kichhoat=1 and id=$bai";
-		$result=mysql_query($sql);
-		if (mysql_num_rows($result)) { //co ki thi
-			$dapan="";
-			$data = mysql_fetch_array($result);
-			echo "<table width=100%><tr><td width=50%>";
-			echo "<div>".$data['tenbai']."</div>";
-			echo "<div>Số câu: ".$data['socau']. "</div>";
-			echo "<div>Thời gian: ".($data['thoigian']<600?"0":"").intval($data['thoigian']/60).":".(($data['thoigian'] % 60)<10?"0":"").($data['thoigian'] % 60)."</div>";
-			echo "<div>Mã đề KT: <span class='maudo'>".$_SESSION['maso']."</span></div>";
-			echo "</td><td width=50%>";
-			echo "<div> Họ tên: ".$_SESSION['ten']."</div><div>Lớp: ".$_SESSION['lop']."</div>";
-			echo "<div>Thời gian còn: <span id='thoigian'>--:--</span></div>";
-			echo "</td></tr></table><hr/>";
-			echo "<table id='khuvucthi' width=100%><tr><td><button id='nopbai'>Nộp bài</button></td>";
-			echo "<td><div id='cauhoitraloi'>Câu trả lời: </div></td>";
-			echo "<td><button id='cautruoc'>Câu trước</button> <button id='causau'>Câu sau</button>";
-			echo "<input type='checkbox' id='tuchuyen'/>Tự chuyển câu hỏi</td></tr></table>";
-			$tieude= $data['tieude']."<br/>";
-			$socau = $data['socau'];
-			$_SESSION['socau']=$socau;
-			$_SESSION['baikt']=$tieude;
-			$thoigian=$data['thoigian'];
-			$lamtudau = true;
-			if (isset($_SESSION['gio'])) {
-				$thoigian = $_SESSION['gio'];
+		if (isset($_SESSION['mabai'])) {
+			echo "<div class='maudo'>Mỗi lần tải lại (refresh) trang web, bạn bị mất hết các phương án đã chọn và bị trừ thêm 6 giây.</div>";
+			$bai = intval($_SESSION['mabai']);
+			$sql = "select * from baikiemtra where kichhoat=1 and id=$bai";
+			$result=mysql_query($sql);
+			if (mysql_num_rows($result)) { //co ki thi
+				$dapan="";
+				$data = mysql_fetch_array($result);
+				echo "<table width=100%><tr><td width=50%>";
+				echo "<div>".$data['tenbai']."</div>";
+				echo "<div>Số câu: ".$data['socau']. "</div>";
+				echo "<div>Thời gian: ".($data['thoigian']<600?"0":"").intval($data['thoigian']/60).":".(($data['thoigian'] % 60)<10?"0":"").($data['thoigian'] % 60)."</div>";
+				echo "<div>Mã đề KT: <span class='maudo'>".$_SESSION['maso']."</span></div>";
+				echo "</td><td width=50%>";
+				echo "<div> Họ tên: ".$_SESSION['ten']."</div><div>Lớp: ".$_SESSION['lop']."</div>";
+				echo "<div>Thời gian còn: <span id='thoigian'>--:--</span></div>";
+				echo "</td></tr></table><hr/>";
+				echo "<table id='khuvucthi' width=100%><tr><td><button id='nopbai'>Nộp bài</button></td>";
+				echo "<td><div id='cauhoitraloi'>Câu trả lời: </div></td>";
+				echo "<td><button id='cautruoc'>Câu trước</button> <button id='causau'>Câu sau</button>";
+				echo "<input type='checkbox' checked id='tuchuyen'/>Tự chuyển câu hỏi</td></tr></table>";
+				$tieude= $data['tieude']."<br/>";
+				$socau = $data['socau'];
+				$_SESSION['mabai']=$bai;
+				$_SESSION['socau']=$socau;
+				$_SESSION['baikt']=$tieude;
+				$_SESSION['tenbai']=$data['tenbai'];
+				$thoigian=$data['thoigian'];
 				$lamtudau = false;
-			}
-			echo "<script language='javascript'>var t = ".$thoigian."+1; var sc = ".$socau."; var lamtudau=".($lamtudau?1:0).";</script>";
-			$caccauhoi="";
-			$dsloai=",";
-			$sql = "select * from cauhoi where dung=1 and bai=$bai order by rand()";// limit $socau
-			$result = mysql_query($sql);
-			$ch=1;
-			echo "<hr/><div id='baikiemtra' style='display:".($lamtudau?"none":"block").";'>";
-			while (($data = mysql_fetch_array($result)) && ($ch<=$socau)) {
-				if (strpos($dsloai,",".$data['id'].",") === false) {
-					echo "<div class='cau' style='display:none;'>";
-					echo "<div class='cauhoi'>";
-					echo ($ch++).". ".$data['hoi']."<br/>";
-					echo "</div>";
-					$caccauhoi.="|".$data['id'].":";
-					echo "<div class='traloi'>";
-					$sql = "select * from traloi where cauhoi=".$data['id']." order by rand()";
-					$result2 = mysql_query($sql) or die(mysql_error());
-					$pa=1;
-					while ($data2 = mysql_fetch_array($result2)) {
-						$caccauhoi.=$data2['id']." ";
-						echo "<div class='phuongan' id='pa".$data2['id']."'><span>";
-						echo chr(64+$pa++)."</span>. ";
-						echo $data2['phuongan'];
-						echo "</div>";
-						if ($data2['diem']>0) if (rand()>10000) $dapan=chr($ch+63).$pa.$dapan; else $dapan.=chr($ch+63).$pa;
-					}
-					echo "</div>";
-					$dsloai.=dsloaitru($data['id']);
-					echo "<div class='chon'>Bạn chưa chọn câu trả lời</div>";
-					//echo "<div><span class</div>";
-					echo "</div>";
+				if (isset($_SESSION['gio'])) {
+					$thoigian = $_SESSION['gio']-6;
+					//$lamtudau = false;
 				}
+				echo "<script language='javascript'>var t = ".$thoigian."+1; var sc = ".$socau."; var lamtudau=".($lamtudau?1:0).";</script>";
+				//$caccauhoi="";
+				//$dsloai=",";
+				$dekiemtra = layCaccauhoi($_SESSION['maso']);
+				$cauhoikt = explode("|",$dekiemtra);
+				$ch=1;
+				echo "<hr/><div id='baikiemtra' style='display:none;'>";
+				foreach ($cauhoikt as $cauhoirieng) {
+					if (strlen($cauhoirieng)>0) {
+						$hoidap=explode(":",$cauhoirieng);
+						$cautraloi = explode(" ",$hoidap[1]);
+						echo "<div class='cau' style='display:none;'>";
+						echo "<div class='cauhoi'>";
+						echo "<b><u>Câu ".($ch++).".</u></b> ".layCauhoi($hoidap[0])."<br/>";
+						echo "</div>";
+						//$caccauhoi.="|".$data['id'].":";
+						echo "<div class='traloi'>";
+						$pa=1;
+						foreach ($cautraloi as $tloi) {
+							if (strlen($tloi)>0) {
+								echo "<div class='phuongan' id='pa".$tloi."'><span>";
+								echo chr(64+$pa++)."</span>. ";
+								$pantl=layTraloi($tloi);
+								echo $pantl[0];
+								echo "</div>";
+								if ($pantl[1]>0) if (rand()>10000) $dapan=chr($ch+63).$pa.$dapan; else $dapan.=chr($ch+63).$pa;
+							}
+						}
+						echo "</div>";
+						//$dsloai.=dsloaitru($data['id']);
+						echo "<div class='chon'>Bạn chưa chọn câu trả lời</div>";
+						echo "</div>";
+					}
+				}
+				echo "</div><div align='center'>".$tieude."<button id='batdau'>Bắt đầu làm bài</button></div>";
+				echo "<script language='javascript'>var dap = '".$dapan."';</script>";
+				
+				
+				//echo "<hr/>";
+				
+				//mysql_query("update nopbaikiemtra set caccauhoi='$caccauhoi' where id=".$_SESSION['maso']) or die(mysql_error());
 			}
-			//echo "<hr/>";
-			echo "</div><div align='center' style='display:".($lamtudau?"block":"none").";'>".$tieude."<button id='batdau'>Bắt đầu làm bài</button></div>";
-			echo "<script language='javascript'>var dap = '".$dapan."';</script>";
-			mysql_query("update nopbaikiemtra set caccauhoi='$caccauhoi' where id=".$_SESSION['maso']) or die(mysql_error());
-		}
-		else { //khong co ki thi
-			echo "Không có bài kiểm tra hoặc đã hết hạn";
+			else { //khong co ki thi
+				echo "Không có bài kiểm tra hoặc đã hết hạn";
+			}
+		} else {
+			$bai = intval($_GET['id']);
+			$sql = "select * from baikiemtra where kichhoat=1 and id=$bai";
+			$result=mysql_query($sql);
+			if (mysql_num_rows($result)) { //co ki thi
+				$dapan="";
+				$data = mysql_fetch_array($result);
+				echo "<table width=100%><tr><td width=50%>";
+				echo "<div>".$data['tenbai']."</div>";
+				echo "<div>Số câu: ".$data['socau']. "</div>";
+				echo "<div>Thời gian: ".($data['thoigian']<600?"0":"").intval($data['thoigian']/60).":".(($data['thoigian'] % 60)<10?"0":"").($data['thoigian'] % 60)."</div>";
+				echo "<div>Mã đề KT: <span class='maudo'>".$_SESSION['maso']."</span></div>";
+				echo "</td><td width=50%>";
+				echo "<div> Họ tên: ".$_SESSION['ten']."</div><div>Lớp: ".$_SESSION['lop']."</div>";
+				echo "<div>Thời gian còn: <span id='thoigian'>--:--</span></div>";
+				echo "</td></tr></table><hr/>";
+				echo "<table id='khuvucthi' width=100% style='display:none;'><tr><td><button id='nopbai'>Nộp bài</button></td>";
+				echo "<td><div id='cauhoitraloi'>Câu trả lời: </div></td>";
+				echo "<td><button id='cautruoc'>Câu trước</button> <button id='causau'>Câu sau</button>";
+				echo "<input type='checkbox' checked id='tuchuyen'/>Tự chuyển câu hỏi</td></tr></table>";
+				$tieude= $data['tieude']."<br/>";
+				$socau = $data['socau'];
+				$_SESSION['mabai']=$bai;
+				$_SESSION['socau']=$socau;
+				$_SESSION['baikt']=$tieude;
+				$thoigian=$data['thoigian'];
+				$lamtudau = true;
+				echo "<script language='javascript'>var t = ".$thoigian."+1; var sc = ".$socau."; var lamtudau=".($lamtudau?1:0).";</script>";
+				$caccauhoi="";
+				$dsloai=",";
+				$sql = "select * from cauhoi where dung=1 and bai=$bai order by rand()";// limit $socau
+				$result = mysql_query($sql);
+				$ch=1;
+				echo "<hr/><div id='baikiemtra' style='display:".($lamtudau?"none":"block").";'>";
+				while (($data = mysql_fetch_array($result)) && ($ch<=$socau)) {
+					if (strpos($dsloai,",".$data['id'].",") === false) {
+						echo "<div class='cau' style='display:none;'>";
+						echo "<div class='cauhoi'>";
+						echo "<b><u>Câu ".($ch++).".</u></b> ".$data['hoi']."<br/>";
+						echo "</div>";
+						$caccauhoi.="|".$data['id'].":";
+						echo "<div class='traloi'>";
+						$sql = "select * from traloi where cauhoi=".$data['id']." order by rand()";
+						$result2 = mysql_query($sql) or die(mysql_error());
+						$pa=1;
+						while ($data2 = mysql_fetch_array($result2)) {
+							$caccauhoi.=$data2['id']." ";
+							echo "<div class='phuongan' id='pa".$data2['id']."'><span>";
+							echo chr(64+$pa++)."</span>. ";
+							echo $data2['phuongan'];
+							echo "</div>";
+							if ($data2['diem']>0) if (rand()>10000) $dapan=chr($ch+63).$pa.$dapan; else $dapan.=chr($ch+63).$pa;
+						}
+						echo "</div>";
+						$dsloai.=dsloaitru($data['id']);
+						echo "<div class='chon'>Bạn chưa chọn câu trả lời</div>";
+						//echo "<div><span class</div>";
+						echo "</div>";
+					}
+				}
+				//echo "<hr/>";
+				echo "</div><div align='center' style='display:".($lamtudau?"block":"none").";'>".$tieude."<button id='batdau'>Bắt đầu làm bài</button></div>";
+				echo "<script language='javascript'>var dap = '".$dapan."';</script>";
+				mysql_query("update nopbaikiemtra set caccauhoi='$caccauhoi' where id=".$_SESSION['maso']) or die(mysql_error());
+			}
+			else { //khong co ki thi
+				echo "Không có bài kiểm tra hoặc đã hết hạn";
+			}
 		}
 	}
 	else { //chua chon ki thi
@@ -329,7 +411,42 @@ function uploadFile($uname,$folder,$debug=false) {
 	if ($debug) echo "Not found";
 	return "";
 }
-
+function layCauhoi($macauhoi=0) {
+	$retu = mysql_query("select hoi from cauhoi where id=$macauhoi");
+	if ($retu) {
+		if ($row=mysql_fetch_array($retu)) {
+			return $row['hoi'];
+		} else {
+			return "";
+		}
+	} else {
+		return "";
+	}
+}
+function layTraloi($matraloi=0) {
+	$retu = mysql_query("select phuongan,diem from traloi where id=$matraloi");
+	if ($retu) {
+		if ($row=mysql_fetch_array($retu)) {
+			return $row;
+		} else {
+			return ["",0];
+		}
+	} else {
+		return ["",0];
+	}
+}
+function layCaccauhoi($madekt=0) {
+	$retu = mysql_query("select * from nopbaikiemtra where id=$madekt");
+	if ($retu) {
+		if ($row=mysql_fetch_array($retu)) {
+			return $row['caccauhoi'];
+		} else {
+			return "";
+		}
+	} else {
+		return "";
+	}
+}
 function xemdebai($bai) { //xem de bai
 	$sql= "select * from baitap where id=$bai";
 	if (defined("DEBUG")) echo $sql."<br/>";
