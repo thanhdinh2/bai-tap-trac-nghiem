@@ -26,7 +26,7 @@ if (isset($_GET['act'])) {
 		} 
 		else { //input
 			echo "<form action='?bai=$bai&act=add' method='post'>";
-			echo "Câu hỏi <br/><textarea cols='80' name='cauhoi' ></textarea><br/>";
+			echo "Câu hỏi <br/><textarea cols='80' name='cauhoi' rows='10'></textarea><br/>";
 			echo "Loại trừ với các câu hỏi: <input type='text' name='loaitru' /><br/>";
 			echo "Sử dụng? <input type='checkbox' checked name='sudung' /><br/>";
 			echo "<input type ='submit' name='addnew' value='Thêm vào'>";

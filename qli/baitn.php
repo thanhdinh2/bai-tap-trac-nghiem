@@ -123,7 +123,7 @@ function xemdebai($bai) { //xem de bai
 	if (mysql_num_rows($result)) {
 		$data  = mysql_fetch_array($result);
 		echo "<u>". $data['tenbai']."</u><br/>";
-		echo "<iframe src='cauhoi.php?bai=$bai' height='500' width='1000'></iframe><br/>";
+		echo "<iframe src='cauhoi.php?bai=$bai' height='500' width='100%'></iframe><br/>";
 		echo "<a href='preview.php?id=$bai'>Xem thử bài kiểm tra</a><br/>";
 		echo "<a href='?'>Quay lại danh mục bài kiểm tra</a><br/>";
 		echo "<a href='?act=edit&id=$bai'>Sửa bài này</a><br/>";
