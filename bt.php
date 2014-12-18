@@ -13,10 +13,11 @@ if (isset($_POST['nop'])) {
 	$baitap = $_POST['baitap'];
 	$ufile = uploadFile("nfile","upload",defined("DEBUG"));
 	if ($ufile) {
-		$sql="insert into nopbai (hoten,lop,ngaygio,ip,file,baitap) value ('$hoten','$lop',NOW(),'".$_SERVER['REMOTE_ADDR']."','$ufile',$baitap)";
+		$sql="insert into th_nopbai (hoten,lop,ngaygio,ip,file,baitap) value ('$hoten','$lop',NOW(),'".$_SERVER['REMOTE_ADDR']."','$ufile',$baitap)";
 		if (defined("DEBUG")) echo $sql."<br/>";
 		$result = mysql_query($sql) or die (mysql_error());
 		echo "Đã nộp xong.<br/>".$hoten." lớp ".$lop." Tập tin nộp: ".$ufile;
+		redirect("?id=$baitap",4);
 	}
 	else echo "THẤT BẠI";
 } else if (isset($_GET['muc'])) {
@@ -59,23 +60,25 @@ function uploadFile($uname,$folder,$debug=false) {
 }
 
 function xemdebai($bai) { //xem de bai
-	$sql= "select * from baitap where id=$bai";
+	$sql= "select * from th_baitap where maso=$bai";
 	if (defined("DEBUG")) echo $sql."<br/>";
 	$result = mysql_query($sql) or die (mysql_error());
 	if (mysql_num_rows($result)) {
 		$data  = mysql_fetch_array($result);
-		echo "<u><b>". $data['ten']."</b></u><br/><br/>";
+		echo "<u><b>". $data['tieude']."</b></u><br/><br/>";
 		echo $data['noidung']."<br/>";
-		echo "<hr/>";
-		echo "NỘP BÀI<br/>";
-		echo "<form action='' method='post' enctype='multipart/form-data'>";
-		echo "Họ và tên: <input name='hoten' type='text' size='40'><br/>";
-		echo "Lớp: <input name='lop' type='text' size='9'><br/>";
-		
-		echo "Tập tin: <input name='nfile' type='file'  id='nfile'><br/>";
-		echo "<input name='baitap' type='hidden' value='$bai'><br/>";
-		echo "<input name='nop' type='submit' value='Nộp bài'><br/>";
-		echo "</form>";
+		if ($data['nopbai']) {
+			echo "<hr/>";
+			echo "NỘP BÀI<br/>";
+			echo "<form action='' method='post' enctype='multipart/form-data'>";
+			echo "Họ và tên: <input name='hoten' type='text' size='50'>. ";
+			echo "Lớp: <input name='lop' type='text' size='5'>. ";
+			
+			echo "Tập tin: <input name='nfile' type='file'  id='nfile'>. ";
+			echo "<input name='baitap' type='hidden' value='$bai'>";
+			echo "<input name='nop' type='submit' value='Nộp bài'><br/>";
+			echo "</form>";
+		}
 	} else {
 		echo "Không có bài này";
 	}
@@ -84,13 +87,13 @@ function xemdebai($bai) { //xem de bai
 
 function lietketheomuc($muc){ //liet ke de bai theo muc
 	echo "DANH MỤC BÀI TẬP<hr/>";
-	$sql="select * from baitap where muc = '$muc' ";
+	$sql="select * from th_baitap where mamuc = '$muc' ";
 	if (defined("DEBUG")) echo $sql."<br/>";
 	$result = mysql_query($sql) or die(mysql_error()); 
 	if (mysql_num_rows($result)) {
 		
 		while ($data = mysql_fetch_array($result)){
-			echo "<a href='?act=view&id=".$data['id']."'>".$data['id'].". ".$data['ten']."</a><br/>\n";
+			echo "<a href='?act=view&id=".$data['maso']."'>".$data['maso'].". ".$data['tieude']."</a><br/>\n";
 			//echo "OK";
 		}
 	} else {

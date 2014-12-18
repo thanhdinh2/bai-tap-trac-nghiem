@@ -1,5 +1,9 @@
 ﻿<?php
-
+/* Dự án Kiểm tra trắc nghiệm trong mạng LAN
+ * Kết quả nộp bài tập thực hành
+ * Ngày 10/11/2014
+ * Tác giả: Trần Hữu Nam - thnam@thptnguyendu.edu.vn
+ */
 require_once "../config.php";
 $link = mysql_connect($db_host, $db_user, $db_pass);
 mysql_select_db($db_name);
@@ -14,7 +18,7 @@ echo "<html><head><title>Kết quả làm bài</title>";
 		$(".xoa").click(function(){
 			//alert( $(this).parent().parent().text());
 			$(this).parent().parent().remove();
-			$.post("delrow.php",{id:$(this).attr("id"),tab:"nopbai"},function(data){
+			$.post("delrow.php",{id:$(this).attr("id"),tab:"th_nopbai"},function(data){
 				//if (data.indexOf("OK")>=0) $(this).parent().parent().remove();
 				//alert(data);
 			});
@@ -60,7 +64,7 @@ echo "<div id='baitap'>";
 echo "KẾT QUẢ NỘP BÀI TẬP<BR/>";
 echo "<table id='ketquabaitap'>";
 echo "<tr align='center'><td>Xoá</td><td>ID</td><td>Họ và tên</td><td>Lớp</td><td>Ngày giờ nộp</td><td>Tên tệp</td><td>Bài tập</td><td>IP</td></tr>";
-$sql = "select * from nopbai order by id desc limit ".(($page-1)*$sl1page).",".$sl1page;
+$sql = "select * from th_nopbai order by id desc limit ".(($page-1)*$sl1page).",".$sl1page;
 $result = mysql_query($sql) or die (mysql_error());
 while ($data = mysql_fetch_array($result)) {
 	if ($id==0) $id = $data['id'];
@@ -70,7 +74,7 @@ while ($data = mysql_fetch_array($result)) {
 	echo "<td align='left'>".$data['hoten']."</td>";
 	echo "<td>".$data['lop']."</td>";
 	echo "<td>".$data['ngaygio']."</td>";
-	echo "<td><a href='loadfile.php?f=".$data['file']."'>".$data['file']."</a></td>";
+	echo "<td><a href='../upload/".$data['file']."'>".$data['file']."</a></td>";
 	echo "<td>".$data['baitap']."</td>";
 	echo "<td align='left'>".$data['ip']."</td>";
 	echo "</tr>";
