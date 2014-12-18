@@ -18,11 +18,12 @@
 * Lưu ý:
 - Chương trình khuyến cáo dùng trong mạng LAN, vì tính bảo mật không cao (đề và đáp án).
 - Kết quả được cập nhật liên lục mỗi khi có HS nộp bài
-- Địa chỉ để cập nhật bằng SVN: http://binhdinh.co.cc/svn/baitap (du kien)
 
 Mọi thắc mắc, góp ý và cập nhật chương trình, xin vui lòng liên hệ:
 Trần Hữu Nam,
-huunam0@gmail.com
-binhdinh.co.cc
+thnam@thptnguyendu.edu.vn
 
 
+tn.php = kiem tra trac nghiem nhieu lua chon 1 phuong an dung
+bt.php = lam va nop bai thuc hanh
+ct.php = Kiem tra dien vao cho trong

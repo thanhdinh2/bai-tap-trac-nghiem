@@ -2,5 +2,5 @@
 $db_host = "localhost";
 $db_user = "root";
 $db_pass = "";
-$db_name = "baitap";
+$db_name = "bai_tap";
 ?>

@@ -8,15 +8,15 @@ mysql_query("SET NAMES utf8"); //connect in decode utf8
 echo "<html><head><title>Trắc nghiệm</title></head><body>";
 session_start();
 unset($_SESSION['ten']);
-unset($_SESSION['lop']);
+//unset($_SESSION['lop']);
 unset($_SESSION['ketqua']);
 unset($_SESSION['gio']);
 unset($_SESSION['maso']);
 unset($_SESSION['mabai']);
-unset($_SESSION);
+//unset($_SESSION);
 echo "Đã ra khỏi khu vực thi";
 echo "</body></html>";
-redirect("tn.php",1);
+redirect("kt.php",1);
 
 function redirect($location, $delaytime = 0) {
     if ($delaytime>0) {    

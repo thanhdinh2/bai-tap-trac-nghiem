@@ -4,8 +4,35 @@ body{
 	font-family:Arial,Verdana,Tohama,"Times New Roman";
 }
 
+#tieude {
+  background: none repeat scroll 0 0 yellow;
+  color: blue;
+  font-weight: bold;
+  margin: 0 0 20px;
+  text-align: center;
+}
+#bangketqua {
+  color: blue;
+  text-align: center;
+}
+a:link {
+    text-decoration: none;
+}
 
+a:visited {
+    text-decoration: none;
+}
 
+a:hover {
+    text-decoration: underline;
+}
+#bangthongtin {
+  background: none repeat scroll 0 0 #ddd;
+}
+#khuvucthi {
+  display: none;
+  background: none repeat scroll 0 0 #dd3;
+}
 .chon  {
 	text-align: center;
 	margin: 10px 10px 10px;
@@ -38,7 +65,7 @@ table.don {
 
 table.don td {
 	border-width: 1px;
-	padding: 0px;
+	padding: 8px 8px 8px 8px;
 	border-style: inset;
 	border-color: blue;
 }
@@ -49,7 +76,31 @@ table.don td {
 .maudo {
 	color:red;
 }
+.mauxanh {
+	color:blue;
+}
 
 #thoigian {
 	font-size:150%;
 }
+.dangxem {
+	background:#16F20F;
+}
+pre {
+	font-size:15px;
+	
+}
+
+.codetext {
+	font-family:Courier New,Lucida Console;
+	white-space: pre-wrap;
+	
+}
+#hovaten {
+	border-color:red;
+}
+#hovaten:focus {
+	
+	text-align: center;
+}
+

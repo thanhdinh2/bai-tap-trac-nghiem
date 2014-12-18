@@ -6,10 +6,10 @@ mysql_select_db($db_name);
 mysql_query("SET NAMES utf8"); //connect in decode utf8
 $sql="";
 if (isset($_GET['id'])) {
-	$sql = "select * from nopbai where id>".$_GET['id']." order by id desc";
+	$sql = "select * from th_nopbai where id>".$_GET['id']." order by id desc";
 }
 else {
-	$sql = "select * from nopbai order by ngaygio desc limit 10";
+	$sql = "select * from th_nopbai order by ngaygio desc limit 10";
 }
 $result = mysql_query($sql) or die (mysql_error());
 while ($data = mysql_fetch_array($result)) {
