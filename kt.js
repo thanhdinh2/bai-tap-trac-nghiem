@@ -35,18 +35,26 @@
 			$(this).css('color', 'red');
 			var chon=$(this).find("span:eq(0)").text();
 			$(this).parent().parent().find("div.chon:eq(0)").html("<i>Bạn chọn phương án "+chon+".</i>");
+			if (thithu>=3)
+			{
+				$(this).parent().parent().find("div.chon:eq(0)").append(" <b>("+($(this).hasClass("padung")?"Đúng":"Sai")+")</b>");
+				t+=300;
+				if (!$(this).hasClass("padung")) 
+					$(this).addClass("gachbo");
+			}
 			$("#cautraloi"+(c+1)).text((c+1)+":"+chon);
 			hoi[c]=1;
 			cactraloi[c]=$(this).attr("id").substr(2);
 			$("#cautraloi"+(c+1)).addClass("dachon");
 			if ($(".dachon").length>=sc) {
 				$("#nopbai").show();
+				$("#tuchuyen").prop( "checked", false );
 			}
 			//alert(c+chon);
 			//if (typeof cau == 'undefined') cau = Array(sc).join("-");
 			cau = (c>0?cau.substr(0,c):"")+chon+cau.substr(c+1);
 			pha+=$(this).attr("id");
-			if ($("#tuchuyen").is(':checked'))
+			if ($("#tuchuyen").is(':checked') && (thithu<3))
 				$("#causau").click();
 		});
 		$(".cautraloi").css("cursor","pointer");
@@ -80,6 +88,7 @@
 			if (typeof cau == 'undefined') cau = Array(sc).join("-");
 			$("#baikiemtra").show();
 			$("#khuvucthi").show();
+			if (thithu>=3) $("#thongtin").hide();
 			$(this).parent().hide();
 			$.post("batdau.php");
 			if (!myTimer) tinhgio();
@@ -137,13 +146,25 @@
 	function chuyentrang() {
 		var ph="";
 		var scd = 0;
+		var ketqua="";
 		for (var i=0; i<sc; i++) {
 			ph = String.fromCharCode(i+65)+""+(cau.charCodeAt(i)-63);
-			if (dap.indexOf(ph)>=0) scd++;
+			if (dap.indexOf(ph)>=0) {
+				scd++;
+				ketqua+=(i+1)+" ";
+			}
 		}
 		//alert(scd);
 		//alert(pha);
 		pha=cactraloi.join(",");
 		t=0;
-		window.location.href+="&kq="+scd+"&fb="+pha;
+		if (thithu>=2) 
+		{
+			alert("Các câu làm đúng: "+ketqua);
+			$("#baikiemtra").show();
+			$("#nopbai").hide();
+			$("body").append("<hr/><a href='thoat.php'>Thoát</a><br/>");
+		}
+		else
+			window.location.href+="&kq="+scd+"&fb="+pha;
 	}

@@ -104,3 +104,7 @@ pre {
 	text-align: center;
 }
 
+.gachbo {
+	/*text-decoration: line-through;*/
+	background:#bbbbbb;
+}
