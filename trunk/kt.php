@@ -8,7 +8,7 @@ require_once "config.php";
 $link = mysql_connect($db_host, $db_user, $db_pass);
 mysql_select_db($db_name);
 mysql_query("SET NAMES utf8"); //connect in decode utf8
-date_default_timezone_set("Asia/Ho_Chi_Minh");
+include_once("thamso.php");
 include_once("bbcode.php");
 //define("DEBUG",TRUE);
 echo "<html><head><title>Trắc nghiệm</title>";
@@ -20,7 +20,11 @@ echo "</head><body>";
 
 echo "<div id='tieude'><span>KIỂM TRA TRẮC NGHIỆM</span> <span>. </span></div>";
 session_start();
-if (isset($_SESSION['ten'])) { //da dang nhap
+if ($thithu>0) {
+	$_SESSION['ten']='-----------';
+	$_SESSION['lop']='-----';
+}
+if (isset($_SESSION['ten'])||($thithu)) { //da dang nhap
 	//echo $_SESSION['ten']."<br/>";
 	if (isset($_SESSION['ketqua'])) {
 		echo "KẾT QUẢ LÀM BÀI <br/>";
@@ -29,10 +33,10 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 		echo "<table border='0'>";
 		echo "<tr class='chamcham'><td>Họ và tên:</td><td>".$_SESSION['ten']."</td></tr>";
 		echo "<tr class='chamcham'><td>Lớp:</td><td>".$_SESSION['lop']."</td></tr>";
-		echo "<tr class='chamcham'><td>Mã đề:</td><td class='mauxanh'>".$_SESSION['maso']."</td></tr>";
+		echo "<tr class='chamcham'><td>Mã đề:</td><td class='mauxanh'>".(isset($_SESSION['maso'])?$_SESSION['maso']:"0")."</td></tr>";
 		echo "<tr class='chamcham'><td>Số câu đúng:</td><td><span class='maudo'><b>".$_SESSION['ketqua']."</b></span> <i>(".round(($_SESSION['ketqua']/$_SESSION['socau'])*10,1)." điểm)</i></td></tr>";
 		echo "</table><br/></center></div>";
-		redirect("thoat.php",20);
+		if (!$thithu) redirect("thoat.php",20);
 		echo "<hr/><a href='thoat.php'>Thoát</a><br/>";
 		echo "<hr/><font size='1'>Written by Tran Huu Nam - thnam@thptnguyendu.edu.vn - 2014</font><br/>";
 	}
@@ -43,14 +47,15 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 		//$sql="insert into nopbaikiemtra (hoten,lop,ngaygio,ip,ketqua,baikt) value ('".$_SESSION['ten']."','".$_SESSION['lop']."',NOW(),'".$_SERVER['REMOTE_ADDR']."',".$_SESSION['ketqua'].",'".(isset($_GET['id'])?$_GET['id']:0)."')";
 		$sql="update tn_ketqua set lucnop=NOW(), caudung=".$_SESSION['ketqua'].", traloi='$fb', bai=".(isset($_GET['id'])?$_GET['id']:0)." where id=".$_SESSION['maso'];
 		//echo $sql;
-		$result = mysql_query($sql);
+		if ($thithu==0) $result = mysql_query($sql);
 		$sql="update tn_traloi set luotchon=luotchon+1 where maso in (".$fb.")";
-		$result = mysql_query($sql);
+		if ($thithu==0) $result = mysql_query($sql);
 		redirect("kt.php",1);
 	}
 	else
 	if (isset($_GET['id'])) { //da chon ki thi
 		if (isset($_SESSION['mabai'])) {  //dang lam do dang
+			if (!isset($_SESSION['maso'])) redirect("thoat.php");
 			echo "<div class='maudo' id='canhbao'>Mỗi lần tải lại (refresh) trang web, bạn bị mất hết các phương án đã chọn và bị trừ thêm 5 giây. Lặp lại lần nữa, bạn sẽ nhận điểm 0.</div>";
 			$bai = intval($_SESSION['mabai']);
 			$sql = "select * from tn_kiemtra where kichhoat=1 and maso=$bai";
@@ -58,7 +63,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 			if (mysql_num_rows($result)) { //co ki thi
 				$dapan="";
 				$data = mysql_fetch_array($result);
-				echo "<table width=100% id='bangthongtin'><tr><td width=50%>";
+				echo "<div id='thongtin'><table width=100% id='bangthongtin'><tr><td width=50%>";
 				echo "<div>".$data['tenbai']."</div>";
 				echo "<div>Số câu: ".$data['socau']. "</div>";
 				echo "<div>Thời gian: ".($data['sogiay']<600?"0":"").intval($data['sogiay']/60).":".(($data['sogiay'] % 60)<10?"0":"").($data['sogiay'] % 60)."</div>";
@@ -66,7 +71,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 				echo "</td><td width=50%>";
 				echo "<div> Họ tên: ".$_SESSION['ten']."</div><div>Lớp: ".$_SESSION['lop']."</div>";
 				echo "<div>Thời gian còn: <span id='thoigian'>--:--</span></div>";
-				echo "</td></tr></table><hr/>";
+				echo "</td></tr></table></div>";
 				echo "<table id='khuvucthi' width=100%><tr><td><button id='nopbai'>Nộp bài</button></td>";
 				echo "<td><div id='cauhoitraloi'>Câu trả lời: </div></td>";
 				echo "<td><button id='cautruoc'>Câu trước</button> <button id='causau'>Câu sau</button>";
@@ -102,7 +107,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 						$pa=1;
 						foreach ($cautraloi as $tloi) {
 							if (strlen($tloi)>0) {
-								echo "<div class='phuongan' id='pa".$tloi."'><span>";
+								echo "<div class='phuongan ".((($thithu>=3)&&($pantl[1]>0))?"padung":"")."' id='pa".$tloi."'><span>";
 								echo chr(64+$pa++)."</span>. ";
 								$pantl=layTraloi($tloi);
 								echo showBBcodes($pantl[0]); //phân trả lời
@@ -129,7 +134,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 			if (mysql_num_rows($result)) { //co ki thi
 				$dapan="";
 				$data = mysql_fetch_array($result);
-				echo "<table width=100%><tr><td width=50%>";
+				echo "<div id='thongtin'><table width=100%><tr><td width=50%>";
 				echo "<div>".$data['tenbai']."</div>";
 				echo "<div>Số câu: ".$data['socau']. "</div>";
 				echo "<div>Thời gian: ".($data['sogiay']<600?"0":"").intval($data['sogiay']/60).":".(($data['sogiay'] % 60)<10?"0":"").($data['sogiay'] % 60)."</div>";
@@ -137,7 +142,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 				echo "</td><td width=50%>";
 				echo "<div> Họ tên: ".$_SESSION['ten']."</div><div>Lớp: ".$_SESSION['lop']."</div>";
 				echo "<div>Thời gian còn: <span id='thoigian'>--:--</span></div>";
-				echo "</td></tr></table><hr/>";
+				echo "</td></tr></table></div>";
 				echo "<table id='khuvucthi' width=100% style='display:none;'><tr><td><button id='nopbai'>Nộp bài</button></td>";
 				echo "<td><div id='cauhoitraloi'>Câu trả lời: </div></td>";
 				echo "<td><button id='cautruoc'>Câu trước</button> <button id='causau'>Câu sau</button>";
@@ -171,7 +176,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 						$pa=1;
 						while ($data2 = mysql_fetch_array($result2)) { //duyet cac cau tra loi
 							$caccauhoi.=$data2['maso'].",";
-							echo "<div class='phuongan' id='pa".$data2['maso']."'><span>";
+							echo "<div class='phuongan ".((($thithu>=3)&&($data2['dung']>0))?"padung":"")."' id='pa".$data2['maso']."'><span>";
 							echo chr(64+$pa++)."</span>. ";
 							echo showBBcodes($data2['noidung']);
 							echo "</div>";
@@ -187,12 +192,14 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 				if ($socau>=$ch) $socau=$ch-1; //truong hop khong du so cau hoi
 				//echo "<hr/>";
 				echo "</div><div align='center' style='display:block;margin: 20px;".($lamtudau?"block":"none").";'>".$tieude."<button id='batdau'>Bắt đầu làm bài</button></div>";
-				echo "<script language='javascript'>var dap = '".$dapan."';var t = ".$thoigian."+1; var sc = ".$socau."; var lamtudau=".($lamtudau?1:0).";</script>";
-				$sql = "INSERT INTO `tn_ketqua`(`bai`, `hoten`, `lop`, `cauhoi`,  `lucvao`, `ip`) VALUES ('$bai','".$_SESSION['ten']."','".$_SESSION['lop']."','$caccauhoi','".$_SESSION['dangnhap']."','".$_SERVER['REMOTE_ADDR']."')";
+				echo "<script language='javascript'>var dap = '".$dapan."';var thithu=".$thithu."; var t = ".$thoigian."+1; var sc = ".$socau."; var lamtudau=".($lamtudau?1:0).";</script>";
 				//echo "<p>$sql</p>";
-				mysql_query($sql) or die(mysql_error());
-				$_SESSION['maso']=mysql_insert_id();
-				echo "<script>document.getElementById('madekiemtra').innerHTML='".$_SESSION['maso']."';</script>";
+				if ($thithu==0) {
+					$sql = "INSERT INTO `tn_ketqua`(`bai`, `hoten`, `lop`, `cauhoi`,  `lucvao`, `ip`) VALUES ('$bai','".$_SESSION['ten']."','".$_SESSION['lop']."','$caccauhoi','".$_SESSION['dangnhap']."','".$_SERVER['REMOTE_ADDR']."')";
+					mysql_query($sql) or die(mysql_error());
+					$_SESSION['maso']=mysql_insert_id();
+					echo "<script>document.getElementById('madekiemtra').innerHTML='".$_SESSION['maso']."';</script>";
+				}
 				$_SESSION['socau']=$socau;
 			}
 			else { //khong co ki thi
@@ -201,7 +208,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 		}
 	}
 	else { //chua chon ki thi
-		$sql = "select * from tn_kiemtra where kichhoat=1 and lop = ".intval($_SESSION['lop']);
+		$sql = "select * from tn_kiemtra where kichhoat=1 ".($thithu?"":"and lop = ".intval($_SESSION['lop']));
 		$result = mysql_query($sql);
 		$fid=0;
 		$cid=-1;
@@ -224,7 +231,7 @@ if (isset($_SESSION['ten'])) { //da dang nhap
 		if ($fid==$cid) redirect("?id=".$fid);
 	}
 	echo "<hr/>";
-	echo $_SESSION['ten']." - ".$_SESSION['lop']."<br/>";
+	if ($thithu==0) echo $_SESSION['ten']." - ".$_SESSION['lop']."<br/>";
 	//echo $_SESSION['dangnhap'];
 } 
 else { //chua dang nhap
