@@ -1,6 +1,7 @@
 ﻿<?php
-//redirect("bt.php?id=6"); //bai tap & thuc hanh
-redirect("kiemtra"); // kiem tra trac nghiem
+//redirect("bt.php?id=8"); //bai tap & thuc hanh
+//redirect("de.php?d=bt141223"); //nhom bai tap & thuc hanh
+redirect("kt.php"); // kiem tra trac nghiem
 echo "Hello, How are you?";
 function redirect($location, $delaytime = 0) {
     if ($delaytime>0) {    
