@@ -18,13 +18,13 @@ echo '<script language="javascript" src="kt.js"></script>';
 echo "<link rel=stylesheet href='mystyle.css' type='text/css'>";
 echo "</head><body>";
 
-echo "<div id='tieude'><span>KIỂM TRA TRẮC NGHIỆM</span> <span>. </span></div>";
+echo "<div id='tieude'><span>KIỂM TRA TRẮC NGHIỆM</span> <span>. $thithu</span></div>";
 session_start();
-if ($thithu>0) {
-	$_SESSION['ten']='-----------';
+if ($thithu>1) {
+	$_SESSION['ten']='thi thử $thithu';
 	$_SESSION['lop']='-----';
 }
-if (isset($_SESSION['ten'])||($thithu)) { //da dang nhap
+if (isset($_SESSION['ten'])||($thithu>1)) { //da dang nhap
 	//echo $_SESSION['ten']."<br/>";
 	if (isset($_SESSION['ketqua'])) {
 		echo "KẾT QUẢ LÀM BÀI <br/>";
